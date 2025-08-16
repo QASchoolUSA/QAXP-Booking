@@ -1,0 +1,172 @@
+/* Tailwind base reset and utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* App shell sizing */
+html, body, #root {
+  height: 100%;
+}
+
+/* Smooth scrolling and reduced motion support */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* SVG crisp rendering for iOS and other devices */
+svg, img[src$=".svg"] {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  shape-rendering: crispEdges;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Custom reusable component classes */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-white shadow-sm transition-all duration-200 ease-in-out;
+  }
+  .btn-primary:hover {
+    @apply bg-primary-700 shadow-md transform scale-[1.02];
+  }
+  .btn-primary:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-primary-600;
+  }
+  .btn-primary:active {
+    @apply transform scale-[0.98];
+  }
+  .btn-primary:disabled {
+    @apply bg-gray-400 cursor-not-allowed transform-none shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg bg-accent-600 px-4 py-2 text-white shadow-sm transition-all duration-200 ease-in-out;
+  }
+  .btn-secondary:hover {
+    @apply bg-accent-700 shadow-md transform scale-[1.02];
+  }
+  .btn-secondary:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-accent-600;
+  }
+  .btn-secondary:active {
+    @apply transform scale-[0.98];
+  }
+
+  .card {
+    @apply rounded-xl border border-gray-200 bg-white/70 backdrop-blur p-6 shadow-sm transition-all duration-300 ease-in-out;
+  }
+  .card:hover {
+    @apply shadow-md border-gray-300;
+  }
+
+  .input-field {
+    @apply w-full rounded-md border border-gray-300 px-3 py-2 transition-all duration-200 ease-in-out;
+  }
+  .input-field:focus {
+    @apply outline-none ring-2 ring-primary-600 border-primary-600;
+  }
+  .input-field:hover {
+    @apply border-gray-400;
+  }
+
+  .time-slot {
+    @apply rounded-md border px-3 py-2 text-sm text-left transition-all duration-200 ease-in-out;
+  }
+  .time-slot:not(:disabled):hover {
+    @apply bg-gray-50 border-gray-300 shadow-sm transform scale-[1.02];
+  }
+  .time-slot:focus-visible {
+    @apply outline-none ring-2 ring-offset-1 ring-primary-600;
+  }
+  .time-slot:disabled {
+    @apply border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed;
+  }
+
+  .calendar-day {
+    @apply aspect-square rounded-lg border text-sm flex items-center justify-center transition-all duration-200 ease-in-out;
+  }
+  .calendar-day:hover {
+    @apply bg-gray-50 border-gray-300;
+  }
+  .calendar-day:focus-visible {
+    @apply outline-none ring-2 ring-offset-1 ring-primary-600;
+  }
+  .calendar-day[aria-pressed="true"] {
+    @apply border-primary-600 bg-primary-50 text-primary-700;
+  }
+
+  /* Mobile center alignment utilities */
+  .mobile-center {
+    @apply text-center sm:text-left;
+  }
+
+  .mobile-center-section {
+    @apply text-center sm:text-left;
+  }
+
+  /* Primary color utilities for time slot selection */
+  .border-primary-600 {
+    border-color: #0057B7;
+  }
+
+  .bg-primary-50 {
+    background-color: #eff6ff;
+  }
+
+  .text-primary-700 {
+    color: #1d4ed8;
+  }
+
+  .border-primary-200 {
+    border-color: #dbeafe;
+  }
+
+  .duration-option {
+    @apply rounded-md border border-gray-300 px-3 py-2 text-sm transition-all duration-200 ease-in-out;
+  }
+  .duration-option:hover {
+    @apply bg-gray-50 border-gray-400;
+  }
+  .duration-option:focus-visible {
+    @apply outline-none ring-2 ring-offset-1 ring-primary-600;
+  }
+
+  .alert {
+    @apply rounded-md border p-3 text-sm transition-all duration-300 ease-in-out;
+  }
+  .alert-error {
+    @apply border-red-200 bg-red-50 text-red-700;
+  }
+  .alert-success {
+    @apply border-green-200 bg-green-50 text-green-700;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .loading-spinner {
+    @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
