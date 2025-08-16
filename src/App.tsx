@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom'
-import { addDays, addMinutes, format, isSameDay, setHours, setMinutes } from 'date-fns'
+import { addMinutes, format, isSameDay, setHours, setMinutes } from 'date-fns'
 import { addBooking, isOverlapping } from './lib/bookings'
 
 function App() {
@@ -235,37 +235,11 @@ function ProjectCard({ title, description, technologies, demoLink, repoLink }: {
   )
 }
 
-function SkillCategory({ title, skills }: {
-  title: string;
-  skills: Array<{ name: string; level: number }>;
-}) {
-  return (
-    <div className="card">
-      <h3 className="text-xl font-semibold text-gray-900 mb-4">{title}</h3>
-      <div className="space-y-3">
-        {skills.map((skill) => (
-          <div key={skill.name} className="space-y-1">
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-gray-700">{skill.name}</span>
-              <span className="text-gray-500">{skill.level}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${skill.level}%` }}
-              ></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+
 
 function Book() {
   const [selectedDuration, setSelectedDuration] = useState<number>(30)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
 
   const durationOptions = [30]
 
@@ -332,7 +306,6 @@ function SelectableCalendar({ selectedDate, onSelectDate }: { selectedDate: Date
   const today = new Date()
   
   const days = useMemo(() => {
-    const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
     const daysInMonth = endOfMonth.getDate()
     
