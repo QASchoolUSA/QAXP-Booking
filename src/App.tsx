@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { BrowserRouter, Routes, Route, Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom'
 import { addMinutes, format, isSameDay, setHours, setMinutes } from 'date-fns'
 import { addBooking, isOverlapping } from './lib/bookings'
@@ -32,8 +32,7 @@ function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-4 text-sm">
           <NavLink to="/" end className={({isActive}) => isActive ? 'text-primary-600 font-medium' : 'text-gray-600 hover:text-gray-900'}>Home</NavLink>
-          <NavLink to="/book" className={({isActive}) => isActive ? 'text-primary-600 font-medium' : 'text-gray-600 hover:text-gray-900'}>Book</NavLink>
-          <a href="#" className="btn-primary ml-2">Get Started</a>
+          <Link to="/book" className="btn-primary ml-2">Book Now</Link>
         </nav>
       </div>
     </header>
@@ -55,8 +54,19 @@ function SiteFooter() {
 }
 
 function Home() {
+  const pageTopRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Focus the page top element for accessibility
+    if (pageTopRef.current) {
+      pageTopRef.current.focus()
+    }
+  }, [])
+
   return (
-    <div className="max-w-6xl mx-auto space-y-12">
+    <div ref={pageTopRef} className="max-w-6xl mx-auto space-y-12" tabIndex={-1}>
       {/* Hero Section with Profile */}
       <section className="text-center space-y-6">
         <div className="flex flex-col items-center space-y-6">
@@ -182,8 +192,8 @@ function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
+      </div>
+    </section>
 
       {/* Call to Action Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12 text-center text-white">
@@ -244,12 +254,12 @@ function Book() {
   const durationOptions = [30]
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[1fr,360px] fade-in">
+    <section className="max-w-4xl mx-auto fade-in">
       <div className="space-y-6">
           <div>
             <h2 className="text-2xl font-semibold mb-2 mobile-center">Initial Call</h2>
             <p className="text-gray-600 mb-4 mobile-center">30-minute consultation call to discuss your needs.</p>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Meeting duration options">
+          <div className="flex flex-wrap gap-2 justify-center" role="group" aria-label="Meeting duration options">
             {durationOptions.map((d) => (
               <button
                 key={d}
@@ -278,25 +288,7 @@ function Book() {
         </div>
       </div>
 
-      <aside className="card h-fit sticky top-24">
-        <h3 className="font-medium mb-2">Booking Summary</h3>
-        <p className="text-sm text-gray-600 mb-4">Your info will be collected on the next step.</p>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Duration:</span>
-            <span className="font-medium">{selectedDuration} min</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Date:</span>
-            <span className="font-medium">{selectedDate ? format(selectedDate, 'EEE, MMM d') : 'Not selected'}</span>
-          </div>
-          {selectedDate && (
-            <div className="mt-4 p-3 bg-primary-50 rounded-lg border border-primary-200">
-              <p className="text-xs text-primary-700 font-medium">Next: Select a time slot to continue</p>
-            </div>
-          )}
-        </div>
-      </aside>
+
     </section>
   )
 }
@@ -416,6 +408,7 @@ function SelectableCalendar({ selectedDate, onSelectDate }: { selectedDate: Date
 function CalendarAndSlots({ duration, selectedDate, onSelectDate }: { duration: number; selectedDate: Date | null; onSelectDate: (d: Date) => void }) {
   const navigate = useNavigate()
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null)
+  const confirmButtonRef = useRef<HTMLButtonElement>(null)
 
   const generateSlots = (date: Date, interval: number) => {
     // Generate slots from 12PM to 6PM EST daily
@@ -437,6 +430,25 @@ function CalendarAndSlots({ duration, selectedDate, onSelectDate }: { duration: 
   const handleTimeSlotClick = (timeSlot: string) => {
     setSelectedTimeSlot(timeSlot)
   }
+
+  // Auto-focus on confirmation buttons when time slot is selected
+  useEffect(() => {
+    if (selectedTimeSlot && confirmButtonRef.current) {
+      // Small delay to ensure the buttons are rendered
+      setTimeout(() => {
+        // For mobile devices, use scrollIntoView instead of focus
+        const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window
+        if (isMobile) {
+          confirmButtonRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          })
+        } else {
+          confirmButtonRef.current?.focus()
+        }
+      }, 150)
+    }
+  }, [selectedTimeSlot])
 
   const handleConfirmSelection = () => {
     if (selectedTimeSlot && dateParam) {
@@ -485,17 +497,17 @@ function CalendarAndSlots({ duration, selectedDate, onSelectDate }: { duration: 
             <p className="text-sm text-gray-500">No time slots available for this date</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center relative">
             <div className="max-w-md w-full bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-80 overflow-y-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-80 overflow-y-auto overflow-x-visible p-1">
                 {slots.map((s) => {
                   const disabled = dateParam ? isOverlapping(dateParam, s, duration) : false
                   const isSelected = selectedTimeSlot === s
                   return (
-                    <div key={s} className="flex flex-col items-center">
+                    <div key={s} className="flex flex-col items-center relative">
                       <button
                         type="button"
-                        onClick={() => handleTimeSlotClick(s)}
+                        onClick={() => !disabled && handleTimeSlotClick(s)}
                         disabled={disabled}
                         className={`time-slot text-center w-full ${disabled ? 'time-slot:disabled' : ''} ${isSelected ? 'border-primary-600 bg-primary-50 text-primary-700' : ''}`}
                         aria-disabled={disabled}
@@ -504,42 +516,54 @@ function CalendarAndSlots({ duration, selectedDate, onSelectDate }: { duration: 
                       >
                         <div className="flex items-center justify-center">
                           <span className="font-medium">{s}</span>
-                          {disabled && (
-                            <span className="text-xs text-gray-400 ml-1">Booked</span>
-                          )}
                         </div>
                       </button>
-                      {isSelected && (
-                        <div className="mt-2 flex gap-1">
-                          <button
-                            type="button"
-                            onClick={handleConfirmSelection}
-                            className="w-8 h-8 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center justify-center transition-colors duration-200"
-                            aria-label="Confirm time slot selection"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleCancelSelection}
-                            className="w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded-md flex items-center justify-center transition-colors duration-200"
-                            aria-label="Cancel time slot selection"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      )}
                     </div>
                   )
                 })}
               </div>
             </div>
+            {selectedTimeSlot && (
+              <div className="mt-6 flex flex-col sm:flex-row gap-3 z-10 w-full max-w-sm">
+                <button
+                  ref={confirmButtonRef}
+                  type="button"
+                  onClick={handleConfirmSelection}
+                  className="btn-confirm-slot flex-1 group"
+                  aria-label="Confirm time slot selection"
+                >
+                  <svg className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Confirm
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelSelection}
+                  className="btn-cancel-red flex-1 group"
+                  aria-label="Cancel time slot selection"
+                >
+                  <svg className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+function FullPageLoader() {
+  return (
+    <div className="fixed inset-0 bg-white/90 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirming your booking...</h3>
+        <p className="text-gray-600">Please wait while we process your request</p>
       </div>
     </div>
   )
@@ -551,6 +575,7 @@ function Confirm() {
   const date = params.get('date')
   const time = params.get('time')
   const duration = params.get('duration')
+  const pageTopRef = useRef<HTMLElement>(null)
 
   const friendly = date && time ? format(new Date(`${date}T${time}`), "EEE, MMM d 'at' HH:mm") : null
 
@@ -561,63 +586,79 @@ function Confirm() {
   const [success, setSuccess] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Focus management for page navigation
+  useEffect(() => {
+    if (pageTopRef.current) {
+      pageTopRef.current.focus()
+      // Also scroll to top for better UX
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [])
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setSuccess(null)
     setIsSubmitting(true)
 
-    // Simulate network delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    if (!date || !time || !duration) {
-      setError('Missing booking details. Please go back and select a date and time.')
-      setIsSubmitting(false)
-      return
-    }
-    if (!name.trim()) {
-      setError('Please enter your name.')
-      setIsSubmitting(false)
-      return
-    }
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email address.')
-      setIsSubmitting(false)
-      return
-    }
-
-    const dur = Number(duration)
-    if (isNaN(dur) || dur <= 0) {
-      setError('Invalid duration.')
-      setIsSubmitting(false)
-      return
-    }
-
-    // Prevent double booking
-    if (isOverlapping(date, time, dur)) {
-      setError('Sorry, that time has just been booked. Please choose another slot.')
-      setIsSubmitting(false)
-      return
-    }
-
-    // Save booking
-    addBooking({ name, email, notes, date, time, duration: dur })
-    setSuccess('Your booking is confirmed! Redirecting to success page...')
-    setIsSubmitting(false)
-
-    // Redirect to success page after a short delay
+    // Use setTimeout instead of async/await for better mobile compatibility
     setTimeout(() => {
-      const search = new URLSearchParams({ date: date!, time: time!, duration: String(dur), name, email }).toString()
-      navigate(`/success?${search}`)
-    }, 1500)
+      try {
+        if (!date || !time || !duration) {
+          setError('Missing booking details. Please go back and select a date and time.')
+          setIsSubmitting(false)
+          return
+        }
+        if (!name.trim()) {
+          setError('Please enter your name.')
+          setIsSubmitting(false)
+          return
+        }
+        if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setError('Please enter a valid email address.')
+          setIsSubmitting(false)
+          return
+        }
+
+        const dur = Number(duration)
+        if (isNaN(dur) || dur <= 0) {
+          setError('Invalid duration.')
+          setIsSubmitting(false)
+          return
+        }
+
+        // Prevent double booking
+        if (isOverlapping(date, time, dur)) {
+          setError('Sorry, that time has just been booked. Please choose another slot.')
+          setIsSubmitting(false)
+          return
+        }
+
+        // Save booking
+        addBooking({ name, email, notes, date, time, duration: dur })
+        
+        // Redirect to success page after additional delay
+        setTimeout(() => {
+          setIsSubmitting(false)
+          const search = new URLSearchParams({ date: date!, time: time!, duration: String(dur), name, email }).toString()
+          navigate(`/success?${search}`)
+        }, 1000)
+      } catch (error) {
+        console.error('Booking submission error:', error)
+        setError('An error occurred while processing your booking. Please try again.')
+        setIsSubmitting(false)
+      }
+    }, 500)
   }
 
   return (
-    <section className="max-w-2xl mx-auto fade-in">
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold mb-2">Confirm your booking</h2>
-        <p className="text-gray-600">Please provide your details to complete the booking.</p>
-      </div>
+    <>
+      {isSubmitting && <FullPageLoader />}
+      <section ref={pageTopRef} className="max-w-2xl mx-auto fade-in" tabIndex={-1}>
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold mb-2">Confirm your booking</h2>
+          <p className="text-gray-600">Please provide your details to complete the booking.</p>
+        </div>
       
       {/* Booking Summary Card */}
       <div className="card mb-6">
@@ -640,7 +681,6 @@ function Confirm() {
 
       <form className="card space-y-6" onSubmit={handleSubmit}>
         {error && <div className="alert alert-error fade-in">{error}</div>}
-        {success && <div className="alert alert-success fade-in">{success}</div>}
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -689,38 +729,42 @@ function Confirm() {
           />
         </div>
         
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 mt-6 border-t border-gray-100">
           <button 
             type="button" 
             onClick={() => navigate('/book')} 
-            className="btn-secondary w-full sm:w-auto order-2 sm:order-1"
+            className="btn-outline w-full sm:w-auto sm:min-w-[140px] order-2 sm:order-1 group"
             disabled={isSubmitting}
           >
-            ← Back to Booking
+            <svg className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Booking
           </button>
           <button 
             type="submit" 
-            className="btn-primary w-full sm:w-auto order-1 sm:order-2" 
+            className="btn-confirm w-full sm:w-auto sm:min-w-[160px] order-1 sm:order-2 group" 
             disabled={isSubmitting}
+            onTouchStart={() => {}} // Ensure touch events work on mobile
           >
-            {isSubmitting ? (
-              <>
-                <span className="loading-spinner mr-2"></span>
-                Confirming...
-              </>
-            ) : (
-              'Confirm Booking'
-            )}
+            <span className="flex items-center justify-center">
+              <svg className="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Confirm Booking
+            </span>
           </button>
         </div>
       </form>
     </section>
+    </>
   )
 }
 
 function BookingSuccess() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
+  const pageTopRef = useRef<HTMLElement>(null)
   const date = params.get('date')
   const time = params.get('time')
   const duration = params.get('duration')
@@ -729,8 +773,16 @@ function BookingSuccess() {
 
   const friendly = date && time ? format(new Date(`${date}T${time}`), "EEE, MMM d 'at' HH:mm") : null
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    if (pageTopRef.current) {
+      pageTopRef.current.focus()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [])
+
   return (
-    <section className="max-w-2xl mx-auto text-center py-12 fade-in">
+    <section ref={pageTopRef} className="max-w-2xl mx-auto text-center fade-in" tabIndex={-1}>
       <div className="mb-8">
         {/* Success Icon */}
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">

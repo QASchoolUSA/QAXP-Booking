@@ -27,12 +27,19 @@ export function getBookings(): Booking[] {
 }
 
 /**
+ * Generate a simple UUID-like string for compatibility
+ */
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+
+/**
  * Add a new booking to localStorage
  */
 export function addBooking(booking: Omit<Booking, 'id' | 'createdAt'>): Booking {
   const newBooking: Booking = {
     ...booking,
-    id: crypto.randomUUID(),
+    id: generateId(),
     createdAt: new Date().toISOString(),
   };
 
