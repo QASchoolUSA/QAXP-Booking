@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Link, NavLink, useNavigate, useSearchPara
 import { addMinutes, format, isSameDay, setHours, setMinutes } from 'date-fns'
 import { addBooking, isOverlapping } from './lib/bookings'
 import { downloadICSFile, generateCalendarUrls, type BookingEventData } from './lib/ics'
-import { sendBookingEmails, type EmailNotificationData, type AdminNotificationData } from './lib/email'
+import { sendBookingEmails } from './lib/email'
 
 function App() {
   return (
@@ -30,10 +30,10 @@ function SiteHeader() {
     <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="h-8" style={{imageRendering: 'crisp-edges', shapeRendering: 'crispEdges'}} />
+          <img src="/logo.png" alt="Logo" className="h-8" style={{ imageRendering: 'crisp-edges', shapeRendering: 'crispEdges' }} />
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          <NavLink to="/" end className={({isActive}) => isActive ? 'text-primary-600 font-medium' : 'text-gray-600 hover:text-gray-900'}>Home</NavLink>
+          <NavLink to="/" end className={({ isActive }) => isActive ? 'text-primary-600 font-medium' : 'text-gray-600 hover:text-gray-900'}>Home</NavLink>
           <Link to="/book" className="btn-primary ml-2">Book Now</Link>
         </nav>
       </div>
@@ -73,27 +73,27 @@ function Home() {
       <section className="text-center space-y-6">
         <div className="flex flex-col items-center space-y-6">
           <div className="relative">
-             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full p-1 transform transition-transform duration-300 hover:scale-105" style={{
-               background: 'linear-gradient(180deg, #0057B7 0%, #0057B7 50%, #FFD700 50%, #FFD700 100%)',
-               boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05)'
-             }}>
-               <img 
-                 src="/profile-pic.webp" 
-                 alt="Nikita Bogdanov - Profile Picture" 
-                 className="w-full h-full rounded-full object-cover"
-                 style={{
-                   boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-                 }}
-               />
-             </div>
-            <div 
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full p-1 transform transition-transform duration-300 hover:scale-105" style={{
+              background: 'linear-gradient(180deg, #0057B7 0%, #0057B7 50%, #FFD700 50%, #FFD700 100%)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05)'
+            }}>
+              <img
+                src="/profile-pic.webp"
+                alt="Nikita Bogdanov - Profile Picture"
+                className="w-full h-full rounded-full object-cover"
+                style={{
+                  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                }}
+              />
+            </div>
+            <div
               className="absolute inset-0 rounded-full pointer-events-none"
               style={{
                 background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 100%)'
               }}
             />
           </div>
-          
+
           {/* Stand with Ukraine Message */}
           <div className="flex items-center justify-center space-x-2">
             <div className="w-6 h-4 rounded-sm overflow-hidden shadow-sm">
@@ -125,63 +125,63 @@ function Home() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">A showcase of my latest work and technical achievements</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <ProjectCard 
+          <ProjectCard
             title="Trucking Jobs"
             description="A dedicated job board platform connecting truck drivers with transport companies, featuring application tracking and job alerts."
             technologies={["React", "Next.js", "Tailwind CSS", "PostgreSQL"]}
             demoLink="https://trucking-jobs.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="Locksmith Davenport"
             description="Professional locksmith service website for Davenport area, offering 24/7 emergency service booking and security tips."
             technologies={["React", "Next.js", "Tailwind CSS", "Local SEO"]}
             demoLink="https://locksmithdavenport.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="Sumer Plus"
             description="Modern business website designed for Sumer Plus, highlighting their services and portfolio with a clean, responsive layout."
             technologies={["React", "Next.js", "Tailwind CSS", "Framer Motion"]}
             demoLink="https://sumerplus.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="Precise Accounting"
             description="Corporate website for an accounting firm, featuring service breakdowns, tax resource guides, and client portal access."
             technologies={["React", "Next.js", "Tailwind CSS"]}
             demoLink="https://preciseaccounting.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="Path to Soul"
             description="A serene and inviting website for a wellness and spirituality brand, incorporating calming visuals and event scheduling."
             technologies={["React", "Next.js", "Tailwind CSS", "CMS"]}
             demoLink="https://pathtosoul.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="Haines City Cleaning"
             description="Local business website for a cleaning service in Haines City, optimized for conversion and local search visibility."
             technologies={["React", "Next.js", "Tailwind CSS", "SEO"]}
             demoLink="https://hainescitycleaning.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="Sanford Cleaning"
             description="Developed a professional website for a cleaning company based in Sanford, FL, featuring service showcases and online booking capabilities."
             technologies={["React", "Next.js", "Tailwind CSS", "SEO"]}
             demoLink="https://sanfordcleaning.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="Palace Pizza Bartow"
             description="Created an engaging website for an Italian restaurant located in Bartow, FL, with menu displays and online ordering integration."
             technologies={["React", "Next.js", "JavaScript", "Responsive Design"]}
             demoLink="https://palacepizzabartow.com"
             repoLink="#"
           />
-          <ProjectCard 
+          <ProjectCard
             title="DOTSemi"
             description="Designed a comprehensive website for an annual DOT inspections and semi-truck/trailer repair shop with service information and contact forms."
             technologies={["React", "Next.js", "CSS3", "Local SEO"]}
@@ -236,8 +236,8 @@ function Home() {
               </div>
             </div>
           </div>
-      </div>
-    </section>
+        </div>
+      </section>
 
       {/* Call to Action Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12 text-center text-white">
@@ -279,7 +279,7 @@ function ProjectCard({ title, description, technologies, demoLink, repoLink }: {
           </a>
           <a href={repoLink} className="text-gray-600 hover:text-gray-800 font-medium text-sm flex items-center gap-1">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg>
             Repository
           </a>
@@ -300,9 +300,9 @@ function Book() {
   return (
     <section className="max-w-4xl mx-auto fade-in">
       <div className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-semibold mb-2 mobile-center">Initial Call</h2>
-            <p className="text-gray-600 mb-4 mobile-center">30-minute consultation call to discuss your needs.</p>
+        <div>
+          <h2 className="text-2xl font-semibold mb-2 mobile-center">Initial Call</h2>
+          <p className="text-gray-600 mb-4 mobile-center">30-minute consultation call to discuss your needs.</p>
           <div className="flex flex-wrap gap-2 justify-center" role="group" aria-label="Meeting duration options">
             {durationOptions.map((d) => (
               <button
@@ -325,10 +325,10 @@ function Book() {
         <div className="space-y-4">
           <h3 className="text-xl font-semibold mobile-center">Pick a date and time</h3>
           <CalendarAndSlots
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-              duration={selectedDuration}
-            />
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+            duration={selectedDuration}
+          />
         </div>
       </div>
 
@@ -340,11 +340,11 @@ function Book() {
 function SelectableCalendar({ selectedDate, onSelectDate }: { selectedDate: Date | null; onSelectDate: (d: Date) => void }) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const today = new Date()
-  
+
   const days = useMemo(() => {
     const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
     const daysInMonth = endOfMonth.getDate()
-    
+
     // Generate all days in the current month that are today or later
     const availableDays: Date[] = []
     for (let day = 1; day <= daysInMonth; day++) {
@@ -353,33 +353,33 @@ function SelectableCalendar({ selectedDate, onSelectDate }: { selectedDate: Date
         availableDays.push(date)
       }
     }
-    
+
     // If we're viewing current month and there are no available days, show next month
     if (availableDays.length === 0 && isSameDay(currentMonth, today)) {
       const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
       setCurrentMonth(nextMonth)
     }
-    
+
     return availableDays
   }, [currentMonth, today])
-  
+
   const goToPreviousMonth = () => {
     const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
     // Don't allow going to months before current month
-    if (prevMonth.getFullYear() > today.getFullYear() || 
-        (prevMonth.getFullYear() === today.getFullYear() && prevMonth.getMonth() >= today.getMonth())) {
+    if (prevMonth.getFullYear() > today.getFullYear() ||
+      (prevMonth.getFullYear() === today.getFullYear() && prevMonth.getMonth() >= today.getMonth())) {
       setCurrentMonth(prevMonth)
     }
   }
-  
+
   const goToNextMonth = () => {
     const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
     setCurrentMonth(nextMonth)
   }
-  
-  const canGoPrevious = currentMonth.getFullYear() > today.getFullYear() || 
-                       (currentMonth.getFullYear() === today.getFullYear() && currentMonth.getMonth() > today.getMonth())
-  
+
+  const canGoPrevious = currentMonth.getFullYear() > today.getFullYear() ||
+    (currentMonth.getFullYear() === today.getFullYear() && currentMonth.getMonth() > today.getMonth())
+
   return (
     <div>
       {/* Month Navigation */}
@@ -395,11 +395,11 @@ function SelectableCalendar({ selectedDate, onSelectDate }: { selectedDate: Date
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        
+
         <h3 className="text-lg font-semibold">
           {format(currentMonth, 'MMMM yyyy')}
         </h3>
-        
+
         <button
           type="button"
           onClick={goToNextMonth}
@@ -411,14 +411,14 @@ function SelectableCalendar({ selectedDate, onSelectDate }: { selectedDate: Date
           </svg>
         </button>
       </div>
-      
+
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-2" role="grid" aria-label="Calendar date picker">
         {days.map((d) => {
           const isSelected = selectedDate ? isSameDay(selectedDate, d) : false
           const isToday = isSameDay(d, today)
           const isPast = d < today && !isSameDay(d, today)
-          
+
           return (
             <button
               type="button"
@@ -439,7 +439,7 @@ function SelectableCalendar({ selectedDate, onSelectDate }: { selectedDate: Date
           )
         })}
       </div>
-      
+
       {days.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           <p>No available dates in this month</p>
@@ -627,7 +627,7 @@ function Confirm() {
   const [email, setEmail] = useState('')
   const [notes, setNotes] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  // const [success, setSuccess] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Focus management for page navigation
@@ -642,7 +642,7 @@ function Confirm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    setSuccess(null)
+    // setSuccess(null)
     setIsSubmitting(true)
 
     // Use setTimeout instead of async/await for better mobile compatibility
@@ -679,8 +679,8 @@ function Confirm() {
         }
 
         // Save booking
-        const newBooking = addBooking({ name, email, notes, date, time, duration: dur })
-        
+        addBooking({ name, email, notes, date, time, duration: dur })
+
         // Prepare booking data for emails
         const bookingData = {
           name,
@@ -690,7 +690,7 @@ function Confirm() {
           duration: dur,
           notes: notes || ''
         }
-        
+
         // Send both customer and admin emails via Nodemailer API
         sendBookingEmails(bookingData)
           .then(({ customer, admin }) => {
@@ -699,7 +699,7 @@ function Confirm() {
             } else {
               console.warn('⚠️ Failed to send customer confirmation email:', customer.error)
             }
-            
+
             if (admin.success) {
               console.log('✅ Administrator notification email sent successfully')
             } else {
@@ -709,7 +709,7 @@ function Confirm() {
           .catch(error => {
             console.error('❌ Error sending booking emails:', error)
           })
-        
+
         // Redirect to success page after additional delay
         setTimeout(() => {
           setIsSubmitting(false)
@@ -732,104 +732,104 @@ function Confirm() {
           <h2 className="text-3xl font-bold mb-2">Confirm your booking</h2>
           <p className="text-gray-600">Please provide your details to complete the booking.</p>
         </div>
-      
-      {/* Booking Summary Card */}
-      <div className="card mb-6">
-        <h3 className="font-semibold mb-3 text-gray-900">Booking Details</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-          <div>
-            <span className="text-gray-500">Date & Time</span>
-            <p className="font-medium">{friendly ?? 'Not selected'}</p>
-          </div>
-          <div>
-            <span className="text-gray-500">Duration</span>
-            <p className="font-medium">{duration ? `${duration} minutes` : 'Not selected'}</p>
-          </div>
-          <div>
-            <span className="text-gray-500">Status</span>
-            <p className="font-medium text-green-600">Available</p>
-          </div>
-        </div>
-      </div>
 
-      <form className="card space-y-6" onSubmit={handleSubmit}>
-        {error && <div className="alert alert-error fade-in">{error}</div>}
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Booking Summary Card */}
+        <div className="card mb-6">
+          <h3 className="font-semibold mb-3 text-gray-900">Booking Details</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="text-gray-500">Date & Time</span>
+              <p className="font-medium">{friendly ?? 'Not selected'}</p>
+            </div>
+            <div>
+              <span className="text-gray-500">Duration</span>
+              <p className="font-medium">{duration ? `${duration} minutes` : 'Not selected'}</p>
+            </div>
+            <div>
+              <span className="text-gray-500">Status</span>
+              <p className="font-medium text-green-600">Available</p>
+            </div>
+          </div>
+        </div>
+
+        <form className="card space-y-6" onSubmit={handleSubmit}>
+          {error && <div className="alert alert-error fade-in">{error}</div>}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2" htmlFor="name">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                className="input-field"
+                placeholder="Enter your full name"
+                required
+                disabled={isSubmitting}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2" htmlFor="email">
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="input-field"
+                placeholder="your.email@example.com"
+                required
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+
           <div>
-            <label className="block text-sm font-medium mb-2" htmlFor="name">
-              Name <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium mb-2" htmlFor="notes">
+              Additional Notes
             </label>
-            <input 
-              id="name" 
-              value={name} 
-              onChange={e => setName(e.target.value)} 
-              className="input-field" 
-              placeholder="Enter your full name"
-              required
+            <textarea
+              id="notes"
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              className="input-field"
+              rows={4}
+              placeholder="Any additional information or special requests..."
               disabled={isSubmitting}
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-2" htmlFor="email">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input 
-              id="email" 
-              type="email" 
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              className="input-field" 
-              placeholder="your.email@example.com"
-              required
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 mt-6 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => navigate('/book')}
+              className="btn-outline w-full sm:w-auto sm:min-w-[140px] order-2 sm:order-1 group"
               disabled={isSubmitting}
-            />
-          </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium mb-2" htmlFor="notes">
-            Additional Notes
-          </label>
-          <textarea 
-            id="notes" 
-            value={notes} 
-            onChange={e => setNotes(e.target.value)} 
-            className="input-field" 
-            rows={4} 
-            placeholder="Any additional information or special requests..."
-            disabled={isSubmitting}
-          />
-        </div>
-        
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 mt-6 border-t border-gray-100">
-          <button 
-            type="button" 
-            onClick={() => navigate('/book')} 
-            className="btn-outline w-full sm:w-auto sm:min-w-[140px] order-2 sm:order-1 group"
-            disabled={isSubmitting}
-          >
-            <svg className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Booking
-          </button>
-          <button 
-            type="submit" 
-            className="btn-confirm w-full sm:w-auto sm:min-w-[160px] order-1 sm:order-2 group" 
-            disabled={isSubmitting}
-            onTouchStart={() => {}} // Ensure touch events work on mobile
-          >
-            <span className="flex items-center justify-center">
-              <svg className="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            >
+              <svg className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Confirm Booking
-            </span>
-          </button>
-        </div>
-      </form>
-    </section>
+              Back to Booking
+            </button>
+            <button
+              type="submit"
+              className="btn-confirm w-full sm:w-auto sm:min-w-[160px] order-1 sm:order-2 group"
+              disabled={isSubmitting}
+              onTouchStart={() => { }} // Ensure touch events work on mobile
+            >
+              <span className="flex items-center justify-center">
+                <svg className="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Confirm Booking
+              </span>
+            </button>
+          </div>
+        </form>
+      </section>
     </>
   )
 }
@@ -889,7 +889,7 @@ function BookingSuccess() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        
+
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Booking Confirmed!</h1>
         <p className="text-lg text-gray-600 mb-8">
           Your Initial Call has been successfully scheduled.
@@ -934,7 +934,7 @@ function BookingSuccess() {
         <p className="text-green-800 text-sm mb-4">
           Don't forget to add this meeting to your calendar! Choose your preferred option below:
         </p>
-        
+
         {/* Download ICS Button */}
         <div className="mb-4">
           <button
@@ -948,7 +948,7 @@ function BookingSuccess() {
             Download Calendar File (.ics)
           </button>
         </div>
-        
+
         {/* Calendar Service Links */}
         {calendarUrls && (
           <div>
@@ -961,10 +961,10 @@ function BookingSuccess() {
                 className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
               >
                 <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
                 Google Calendar
               </a>
@@ -975,8 +975,8 @@ function BookingSuccess() {
                 className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
               >
                 <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1.5v-6c0-2.209-1.791-4-4-4s-4 1.791-4 4v6H15v-6c0-1.103.897-2 2-2s2 .897 2 2v6z"/>
-                  <path d="M4.5 17v4h6v-4c0-1.103-.897-2-2-2h-2c-1.103 0-2 .897-2 2z"/>
+                  <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1.5v-6c0-2.209-1.791-4-4-4s-4 1.791-4 4v6H15v-6c0-1.103.897-2 2-2s2 .897 2 2v6z" />
+                  <path d="M4.5 17v4h6v-4c0-1.103-.897-2-2-2h-2c-1.103 0-2 .897-2 2z" />
                 </svg>
                 Outlook
               </a>
@@ -987,7 +987,7 @@ function BookingSuccess() {
                 className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-md transition-colors"
               >
                 <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
                 Yahoo Calendar
               </a>
