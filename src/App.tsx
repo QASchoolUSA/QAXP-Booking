@@ -2,6 +2,8 @@ import { useMemo, useState, useEffect, useRef } from 'react'
 import { BrowserRouter, Routes, Route, Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom'
 import { addMinutes, format, isSameDay, setHours, setMinutes } from 'date-fns'
 import { addBooking, isOverlapping } from './lib/bookings'
+import { downloadICSFile, generateCalendarUrls, type BookingEventData } from './lib/ics'
+import { sendBookingEmails, type EmailNotificationData, type AdminNotificationData } from './lib/email'
 
 function App() {
   return (
@@ -123,6 +125,48 @@ function Home() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">A showcase of my latest work and technical achievements</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ProjectCard 
+            title="Trucking Jobs"
+            description="A dedicated job board platform connecting truck drivers with transport companies, featuring application tracking and job alerts."
+            technologies={["React", "Next.js", "Tailwind CSS", "PostgreSQL"]}
+            demoLink="https://trucking-jobs.com"
+            repoLink="#"
+          />
+          <ProjectCard 
+            title="Locksmith Davenport"
+            description="Professional locksmith service website for Davenport area, offering 24/7 emergency service booking and security tips."
+            technologies={["React", "Next.js", "Tailwind CSS", "Local SEO"]}
+            demoLink="https://locksmithdavenport.com"
+            repoLink="#"
+          />
+          <ProjectCard 
+            title="Sumer Plus"
+            description="Modern business website designed for Sumer Plus, highlighting their services and portfolio with a clean, responsive layout."
+            technologies={["React", "Next.js", "Tailwind CSS", "Framer Motion"]}
+            demoLink="https://sumerplus.com"
+            repoLink="#"
+          />
+          <ProjectCard 
+            title="Precise Accounting"
+            description="Corporate website for an accounting firm, featuring service breakdowns, tax resource guides, and client portal access."
+            technologies={["React", "Next.js", "Tailwind CSS"]}
+            demoLink="https://preciseaccounting.com"
+            repoLink="#"
+          />
+          <ProjectCard 
+            title="Path to Soul"
+            description="A serene and inviting website for a wellness and spirituality brand, incorporating calming visuals and event scheduling."
+            technologies={["React", "Next.js", "Tailwind CSS", "CMS"]}
+            demoLink="https://pathtosoul.com"
+            repoLink="#"
+          />
+          <ProjectCard 
+            title="Haines City Cleaning"
+            description="Local business website for a cleaning service in Haines City, optimized for conversion and local search visibility."
+            technologies={["React", "Next.js", "Tailwind CSS", "SEO"]}
+            demoLink="https://hainescitycleaning.com"
+            repoLink="#"
+          />
           <ProjectCard 
             title="Sanford Cleaning"
             description="Developed a professional website for a cleaning company based in Sanford, FL, featuring service showcases and online booking capabilities."
@@ -635,12 +679,41 @@ function Confirm() {
         }
 
         // Save booking
-        addBooking({ name, email, notes, date, time, duration: dur })
+        const newBooking = addBooking({ name, email, notes, date, time, duration: dur })
+        
+        // Prepare booking data for emails
+        const bookingData = {
+          name,
+          email,
+          date,
+          time,
+          duration: dur,
+          notes: notes || ''
+        }
+        
+        // Send both customer and admin emails via Nodemailer API
+        sendBookingEmails(bookingData)
+          .then(({ customer, admin }) => {
+            if (customer.success) {
+              console.log('✅ Customer confirmation email sent successfully')
+            } else {
+              console.warn('⚠️ Failed to send customer confirmation email:', customer.error)
+            }
+            
+            if (admin.success) {
+              console.log('✅ Administrator notification email sent successfully')
+            } else {
+              console.warn('⚠️ Failed to send administrator notification email:', admin.error)
+            }
+          })
+          .catch(error => {
+            console.error('❌ Error sending booking emails:', error)
+          })
         
         // Redirect to success page after additional delay
         setTimeout(() => {
           setIsSubmitting(false)
-          const search = new URLSearchParams({ date: date!, time: time!, duration: String(dur), name, email }).toString()
+          const search = new URLSearchParams({ date: date!, time: time!, duration: String(dur), name, email, notes: notes || '' }).toString()
           navigate(`/success?${search}`)
         }, 1000)
       } catch (error) {
@@ -770,8 +843,34 @@ function BookingSuccess() {
   const duration = params.get('duration')
   const name = params.get('name')
   const email = params.get('email')
+  const notes = params.get('notes')
 
   const friendly = date && time ? format(new Date(`${date}T${time}`), "EEE, MMM d 'at' HH:mm") : null
+
+  // Prepare booking data for ICS generation
+  const bookingData: BookingEventData | null = useMemo(() => {
+    if (!date || !time || !duration || !name || !email) return null
+    return {
+      name,
+      email,
+      date,
+      time,
+      duration: parseInt(duration),
+      notes: notes || ''
+    }
+  }, [date, time, duration, name, email, notes])
+
+  // Generate calendar URLs
+  const calendarUrls = useMemo(() => {
+    return bookingData ? generateCalendarUrls(bookingData) : null
+  }, [bookingData])
+
+  // Handle ICS download
+  const handleDownloadICS = () => {
+    if (bookingData) {
+      downloadICSFile(bookingData)
+    }
+  }
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -824,11 +923,84 @@ function BookingSuccess() {
         </div>
       </div>
 
+      {/* Calendar Invite Section */}
+      <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6 text-center">
+        <h3 className="font-semibold text-green-900 mb-3 flex items-center justify-center">
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Add to Calendar
+        </h3>
+        <p className="text-green-800 text-sm mb-4">
+          Don't forget to add this meeting to your calendar! Choose your preferred option below:
+        </p>
+        
+        {/* Download ICS Button */}
+        <div className="mb-4">
+          <button
+            onClick={handleDownloadICS}
+            disabled={!bookingData}
+            className="btn-primary inline-flex items-center px-4 py-2 text-sm font-medium"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Download Calendar File (.ics)
+          </button>
+        </div>
+        
+        {/* Calendar Service Links */}
+        {calendarUrls && (
+          <div>
+            <p className="text-green-800 text-xs mb-2">Or add directly to:</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <a
+                href={calendarUrls.google}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
+              >
+                <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google Calendar
+              </a>
+              <a
+                href={calendarUrls.outlook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors"
+              >
+                <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1.5v-6c0-2.209-1.791-4-4-4s-4 1.791-4 4v6H15v-6c0-1.103.897-2 2-2s2 .897 2 2v6z"/>
+                  <path d="M4.5 17v4h6v-4c0-1.103-.897-2-2-2h-2c-1.103 0-2 .897-2 2z"/>
+                </svg>
+                Outlook
+              </a>
+              <a
+                href={calendarUrls.yahoo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-md transition-colors"
+              >
+                <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                Yahoo Calendar
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Next Steps */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
         <h3 className="font-semibold text-blue-900 mb-2">What's Next?</h3>
         <p className="text-blue-800 text-sm">
-          You'll receive a confirmation email shortly with meeting details and a calendar invite.
+          You'll receive a confirmation email shortly with meeting details.
           If you need to reschedule or cancel, please contact us at least 24 hours in advance.
         </p>
       </div>
